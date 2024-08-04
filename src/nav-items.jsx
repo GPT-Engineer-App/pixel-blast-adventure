@@ -1,4 +1,4 @@
-import { Home } from "lucide-react";
+import { Home, Gamepad2 } from "lucide-react";
 import Index from "./pages/Index.jsx";
 
 /**
@@ -6,9 +6,15 @@ import Index from "./pages/Index.jsx";
  */
 export const navItems = [
   {
-    title: "Home",
+    title: "Top-Down Shooter",
     to: "/",
-    icon: <Home className="h-4 w-4" />,
+    icon: <Gamepad2 className="h-4 w-4" />,
     page: <Index />,
+  },
+  {
+    title: "Home",
+    to: "/home",
+    icon: <Home className="h-4 w-4" />,
+    page: <div className="p-4">Home Page</div>,
   },
 ];
