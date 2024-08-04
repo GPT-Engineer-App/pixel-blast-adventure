@@ -1,8 +1,10 @@
-const CANVAS_WIDTH = 800;
-const CANVAS_HEIGHT = 600;
+export const CANVAS_WIDTH = 800;
+export const CANVAS_HEIGHT = 600;
 
 export const updateGame = (state, key) => {
   const newState = { ...state };
+
+  if (newState.gameOver) return newState;
 
   // Update player position
   if (key) {
@@ -11,13 +13,16 @@ export const updateGame = (state, key) => {
         newState.player.y = Math.max(0, newState.player.y - newState.player.speed);
         break;
       case 's':
-        newState.player.y = Math.min(CANVAS_HEIGHT, newState.player.y + newState.player.speed);
+        newState.player.y = Math.min(CANVAS_HEIGHT - 30, newState.player.y + newState.player.speed);
         break;
       case 'a':
         newState.player.x = Math.max(0, newState.player.x - newState.player.speed);
         break;
       case 'd':
-        newState.player.x = Math.min(CANVAS_WIDTH, newState.player.x + newState.player.speed);
+        newState.player.x = Math.min(CANVAS_WIDTH - 30, newState.player.x + newState.player.speed);
+        break;
+      case ' ':
+        newState.bullets.push({ x: newState.player.x + 15, y: newState.player.y, speed: 10 });
         break;
     }
   }
@@ -25,13 +30,13 @@ export const updateGame = (state, key) => {
   // Update bullets
   newState.bullets = newState.bullets.filter((bullet) => bullet.y > 0);
   newState.bullets.forEach((bullet) => {
-    bullet.y -= 10;
+    bullet.y -= bullet.speed;
   });
 
   // Spawn enemies
   if (Math.random() < 0.02) {
     newState.enemies.push({
-      x: Math.random() * CANVAS_WIDTH,
+      x: Math.random() * (CANVAS_WIDTH - 20),
       y: 0,
       speed: 2 + Math.random() * 2,
     });
@@ -61,6 +66,11 @@ export const updateGame = (state, key) => {
     });
   });
 
+  // Check for game over
+  if (newState.enemies.some(enemy => enemy.y + 20 > newState.player.y)) {
+    newState.gameOver = true;
+  }
+
   return newState;
 };
 
@@ -69,7 +79,7 @@ export const drawGame = (ctx, state) => {
 
   // Draw player
   ctx.fillStyle = 'blue';
-  ctx.fillRect(state.player.x - 15, state.player.y - 15, 30, 30);
+  ctx.fillRect(state.player.x, state.player.y, 30, 30);
 
   // Draw bullets
   ctx.fillStyle = 'yellow';
@@ -80,6 +90,6 @@ export const drawGame = (ctx, state) => {
   // Draw enemies
   ctx.fillStyle = 'red';
   state.enemies.forEach((enemy) => {
-    ctx.fillRect(enemy.x - 10, enemy.y - 10, 20, 20);
+    ctx.fillRect(enemy.x, enemy.y, 20, 20);
   });
 };
